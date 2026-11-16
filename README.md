@@ -32,6 +32,12 @@ node /bot/main.ts
 ```
 which reads `/input/snapshot.json` and writes directly to `/output`.
 
+## Viewing the Dashboard
+
+1. `dashboard/index.html` loads `../data.js`, which is generated at runtime by `node main.ts` and is not tracked in the repository.
+2. Opening `dashboard/index.html` directly from the repository workspace will display a blank page.
+3. The proper way to view the dashboard is to first run `node main.ts --input .staging/input/snapshot.json` (or specify `--output <dir>`), then open `<output>/dashboard/index.html` in your browser.
+
 ## Repository Layout
 
 - `main.ts`: Primary runner script orchestrating data ingestion, board valuation modeling, dashboard data emission, asset synchronization, and dossier generation.

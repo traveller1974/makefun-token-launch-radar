@@ -17,13 +17,13 @@ The valuation engine models pre-token implied launch value using sublinear TVL s
 The radar runs on Node.js 22+ using standard library modules with zero runtime dependencies.
 
 ```bash
-# Execute main entrypoint against the sealed snapshot
-node main.ts --input .staging/input/snapshot.json
+# Execute main entrypoint against a DefiLlama snapshot (e.g., ../input/snapshot.json from the unpacked kit)
+node main.ts --input <path/to/snapshot.json>
 
 # Or specify a custom output directory via environment variable or CLI argument
-MAKEFUN_OUTPUT_DIR=out node main.ts --input .staging/input/snapshot.json
+MAKEFUN_OUTPUT_DIR=out node main.ts --input <path/to/snapshot.json>
 # or
-node main.ts --input .staging/input/snapshot.json --output out
+node main.ts --input <path/to/snapshot.json> --output out
 ```
 
 In the competition grader container environment, the runner executes:
@@ -35,8 +35,8 @@ which reads `/input/snapshot.json` and writes directly to `/output`.
 ## Viewing the Dashboard
 
 1. `dashboard/index.html` loads `../data.js`, which is generated at runtime by `node main.ts` and is not tracked in the repository.
-2. Opening `dashboard/index.html` directly from the repository workspace will display a blank page.
-3. The proper way to view the dashboard is to first run `node main.ts --input .staging/input/snapshot.json` (or specify `--output <dir>`), then open `<output>/dashboard/index.html` in your browser.
+2. Opening `dashboard/index.html` directly from the repository workspace displays a short setup guidance message indicating that `data.js` has not been generated yet.
+3. To view the live radar dashboard, first run `node main.ts --input <path/to/snapshot.json> --output out`, then open `out/dashboard/index.html` in your browser.
 
 ## Repository Layout
 

@@ -2,7 +2,16 @@
   'use strict';
 
   var DATA = window.RADAR;
-  if (!DATA) return;
+  if (!DATA || !Array.isArray(DATA.rows)) {
+    var root = document.getElementById('radar-app');
+    if (root) {
+      root.appendChild(el('main', {class: 'radar-shell'}, el('div', {class: 'board-panel'}, el('div', {class: 'empty-state'}, [
+        el('h3', {text: 'No radar data loaded'}),
+        el('p', {text: 'data.js is generated at runtime and is not tracked in the repo. Run node main.ts --input <snapshot.json> --output out, then open out/dashboard/index.html.'})
+      ]))));
+    }
+    return;
+  }
 
   var WL = new Set('armitage-by-wintermute,axis,b14g,bittensor-dtao,clearstar,curvance,doppler-finance,ember,firelight,galaxy-curation,gami-labs,gauntlet,hive-protocol,hyperithm,infinifi,k3-capital,keyrock,lagoon,lightning-network,lofty,mezo-earn,noble,nonce-capital,onre,opentrade,plume-vaults,r25,reti-pooling,rockawayx,saturn,steakhouse-financial,symbiotic,tori-finance,tulipa-capital,tydro,upshift,usdd,valos,veda,yuzu-money'.split(','));
 

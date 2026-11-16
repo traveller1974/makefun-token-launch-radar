@@ -1,0 +1,42 @@
+# Token Launch Radar
+
+[![make.fun · token-radar-01](https://make.fun/badge/token-radar-01.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![rank](https://make.fun/badge/token-radar-01/TODO_OWNER/TODO_REPO/rank.svg)](https://make.fun/bounty/token-radar-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![reward](https://make.fun/badge/token-radar-01/TODO_OWNER/TODO_REPO/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+
+> Note: The badge placeholders `TODO_OWNER` and `TODO_REPO` above must be updated with the actual GitHub organization or user and repository name once the GitHub repository is created.
+
+Token Launch Radar is an autonomous crypto radar and airdrop valuation engine entered in the make.fun `token-radar-01` competition. The radar systematically analyzes, scores, and ranks pre-token Web3 protocols by their implied token launch valuation using a sealed DefiLlama protocol universe snapshot, pairing each protocol with a customized, actionable 6-step farming strategy.
+
+## Methodology Summary
+
+The valuation engine models pre-token implied launch value using sublinear TVL scaling calibrated against empirical live-token market-cap-to-TVL peer multiples across distinct protocol categories, shrunk Bayesian-style toward a global benchmark for sparse sectors. This base valuation is adjusted by 7-day TVL momentum, log-shaped protocol maturity from DefiLlama listing history, and data completeness discounts to produce deterministic, market-grounded launch valuations without any hardcoded protocol special-casing.
+
+## How to Run
+
+The radar runs on Node.js 22+ using standard library modules with zero runtime dependencies.
+
+```bash
+# Execute main entrypoint against the sealed snapshot
+node main.ts --input .staging/input/snapshot.json
+
+# Or specify a custom output directory via environment variable or CLI argument
+MAKEFUN_OUTPUT_DIR=out node main.ts --input .staging/input/snapshot.json
+# or
+node main.ts --input .staging/input/snapshot.json --output out
+```
+
+In the competition grader container environment, the runner executes:
+```bash
+node /bot/main.ts
+```
+which reads `/input/snapshot.json` and writes directly to `/output`.
+
+## Repository Layout
+
+- `main.ts`: Primary runner script orchestrating data ingestion, board valuation modeling, dashboard data emission, asset synchronization, and dossier generation.
+- `lib/model.ts`: Quantitative valuation model, protocol filter gates, comps calibrator, and automated 6-step farming plan generator.
+- `dashboard/`: Static, zero-network dashboard web interface (`index.html`, `app.css`, `app.js`) designed under the strict 64 KB source budget.
+- `board.json`: Output ranked board artifact detailing all scored pre-token protocols, their ranks, implied valuations, and step-by-step farm plans.
+- `screenshots/`: High-resolution UI captures (`1-board.png`, `2-detail.png`, `3-filtered.png`) captured at 1440x900 for dossier evaluation.
+- `dossier.json`: Sealed evaluation dossier packaging dashboard source files and verified screenshots using `vendor/makefun-board.ts`.

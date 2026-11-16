@@ -1,10 +1,10 @@
 # Token Launch Radar
 
 [![make.fun · token-radar-01](https://make.fun/badge/token-radar-01.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
-[![rank](https://make.fun/badge/token-radar-01/TODO_OWNER/TODO_REPO/rank.svg)](https://make.fun/bounty/token-radar-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
-[![reward](https://make.fun/badge/token-radar-01/TODO_OWNER/TODO_REPO/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![rank](https://make.fun/badge/token-radar-01/traveller1974/makefun-token-launch-radar/rank.svg)](https://make.fun/bounty/token-radar-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![reward](https://make.fun/badge/token-radar-01/traveller1974/makefun-token-launch-radar/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
 
-> Note: The badge placeholders `TODO_OWNER` and `TODO_REPO` above must be updated with the actual GitHub organization or user and repository name once the GitHub repository is created.
+> Note: The badge placeholders `traveller1974` and `makefun-token-launch-radar` above must be updated with the actual GitHub organization or user and repository name once the GitHub repository is created.
 
 Token Launch Radar is an autonomous crypto radar and airdrop valuation engine entered in the make.fun `token-radar-01` competition. The radar systematically analyzes, scores, and ranks pre-token Web3 protocols by their implied token launch valuation using a sealed DefiLlama protocol universe snapshot, pairing each protocol with a customized, actionable 6-step farming strategy.
 

@@ -9,7 +9,7 @@ Token Launch Radar is an autonomous crypto radar and airdrop valuation engine en
 
 ## Methodology Summary
 
-The valuation engine models pre-token implied launch value using sublinear TVL scaling calibrated against empirical live-token market-cap-to-TVL peer multiples across distinct protocol categories, shrunk Bayesian-style toward a global benchmark for sparse sectors. This base valuation is adjusted by 7-day TVL momentum, log-shaped protocol maturity from DefiLlama listing history, and data completeness discounts to produce deterministic, market-grounded launch valuations without any hardcoded protocol special-casing.
+The valuation engine models pre-token implied launch value using sublinear TVL scaling (`exponent = 0.85`) calibrated against empirical live-token market-cap-to-TVL peer multiples across distinct protocol categories (Bayesian-shrunk with `k = 4` toward the global median `0.2138`), adjusted by clamped 7-day TVL momentum, log-shaped protocol maturity from DefiLlama listing history, data completeness discounts, and a multi-chain breadth factor `(1 + ln(chains))^0.10` (`MODEL_VERSION = "radar-3"`). Pre-token bridges and wrapped or staked assets are intentionally retained across all 289 rankable rows in accordance with the competition field guide's "floor, never a ceiling" rule, as their TVL represents real locked economic value and the radar ranks implied launch valuation rather than protocol novelty. At the same time, the multi-chain breadth factor naturally tempers single-chain wrapped giants relative to broadly deployed multi-chain protocols without arbitrary category blacklists or hardcoded protocol names.
 
 ## How to Run
 

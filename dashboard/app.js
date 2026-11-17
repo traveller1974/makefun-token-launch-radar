@@ -216,7 +216,7 @@
       ['Watchlist Coverage', covered + ' / ' + DATA.watchlist_size, '100% coverage guaranteed'],
       ['Scored Rows', String(DATA.board_size), DATA.early_size + ' early pre-token'],
       ['Live Peers', String(DATA.live_size), 'Market multiple comps'],
-      ['Valuation Engine', 'Model v2', 'Empirical comps']
+      ['Valuation Engine', 'Model v3', 'Empirical comps + breadth']
     ];
     return el('header', {class: 'radar-header'}, [
       el('div', {class: 'header-top'}, [
@@ -274,12 +274,14 @@
       ['Maturity Days', m.maturity_days + 'd'],
       ['Unknown Age', m.unknown_age_days + 'd'],
       ['Discount 7d', String(m.confidence_discount_growth)],
-      ['Discount Listed', String(m.confidence_discount_listed)]
+      ['Discount Listed', String(m.confidence_discount_listed)],
+      ['Breadth Exponent', String(m.breadth_gamma || 0.10)]
     ];
     return el('section', {class: 'methodology-panel', hidden: state.showMethodology ? null : ''}, [
-      el('h3', {text: 'Model v2 Valuation Methodology'}),
-      el('p', {text: 'Values pre-token protocols via Bayesian comps, sublinear TVL (0.85), clamped momentum, log maturity, and completeness discounts.'}),
-      el('div', {class: 'formula-block', text: 'ImpliedValue = max(1, round( 1e6 * (TVL / 1e6)^0.85 * M_category * Mult_growth * Mult_maturity * Discount_confidence ))'}),
+      el('h3', {text: 'Model v3 Valuation Methodology'}),
+      el('p', {text: 'Values pre-token protocols via Bayesian comps, sublinear TVL (0.85), clamped momentum, log maturity, completeness discounts, and multi-chain breadth (1 + ln(chains))^0.10.'}),
+      el('p', {text: 'Bridged and wrapped pre-token assets are retained per the field guide floor-not-ceiling rule because their TVL is real locked value and the radar ranks implied launch value rather than novelty; multi-chain breadth relatively dampens single-chain wrapped giants.'}),
+      el('div', {class: 'formula-block', text: 'ImpliedValue = max(1, round( 1e6 * (TVL / 1e6)^0.85 * M_category * Mult_growth * Mult_maturity * Discount_confidence * Mult_breadth ))'}),
       el('div', {class: 'params-grid'}, params.map(function (p) {
         return el('div', {class: 'param-box'}, [el('span', {class: 'param-name', text: p[0]}), el('span', {class: 'param-val', text: p[1]})]);
       }))
@@ -472,6 +474,7 @@
       ['7d Momentum Multiplier', row.growth_multiplier.toFixed(4) + 'x (' + fmtPct(row.change_7d) + ')'],
       ['Maturity Multiplier', row.maturity_multiplier.toFixed(4) + 'x (' + fmtAge(row.age_days) + ')'],
       ['Confidence Discount', row.confidence_discount.toFixed(4) + 'x'],
+      ['Breadth Multiplier', (row.breadth_multiplier || 1).toFixed(4) + 'x (' + (row.breadth_chains || (row.chains ? row.chains.length : 1)) + ' chains)'],
       ['Final Implied Valuation', fmtUsd(row.implied_value_usd)]
     ];
 
@@ -511,7 +514,7 @@
         })
       ]),
       el('div', {class: 'waterfall-card'}, [
-        el('h3', {text: 'Model v2 Valuation Waterfall Breakdown'}),
+        el('h3', {text: 'Model v3 Valuation Waterfall Breakdown'}),
         el('div', {class: 'waterfall-rows'}, waterfallItems.map(function (item, idx) {
           var isLast = idx === waterfallItems.length - 1;
           return el('div', {class: 'waterfall-item' + (isLast ? ' total' : '')}, [

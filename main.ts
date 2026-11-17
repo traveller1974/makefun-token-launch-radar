@@ -1,5 +1,5 @@
 /**
- * Token Launch Radar - Primary Evaluation Runner (Model v2)
+ * Token Launch Radar - Primary Evaluation Runner (Model v3)
  *
  * Ingests sealed snapshot data, scores pre-token protocols via Bayesian empirical comps,
  * validates compliance against gate criteria, outputs ranked board and dashboard assets,

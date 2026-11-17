@@ -1,6 +1,6 @@
-// Token Launch Radar Model v2: empirical comps with Bayesian shrinkage,
+// Token Launch Radar Model v3: empirical comps with Bayesian shrinkage,
 // sublinear TVL base scaling, clamped 7-day TVL momentum, log-shaped protocol maturity,
-// and data completeness confidence discounts.
+// data completeness confidence discounts, and multi-chain breadth scaling.
 //
 // Pure deterministic valuation with zero network dependencies and zero hardcoded protocol names.
 
@@ -27,7 +27,7 @@ export interface Snapshot {
   watchlist: string[];
 }
 
-/** Model v2 valuation and calibration constants. */
+/** Model v3 valuation and calibration constants. */
 export interface ModelConstants {
   shrinkage_k: number;
   exponent: number;
@@ -46,9 +46,10 @@ export interface ModelConstants {
   base_multiple?: number;
   maturity_floor?: number;
   maturity_range?: number;
+  breadth_gamma: number;
 }
 
-/** House valuation parameters for Model v2. */
+/** House valuation parameters for Model v3. */
 export const MODEL: ModelConstants = {
   shrinkage_k: 4,
   exponent: 0.85,
@@ -67,10 +68,11 @@ export const MODEL: ModelConstants = {
   base_multiple: 0.2138,
   maturity_floor: 0.50,
   maturity_range: 0.50,
+  breadth_gamma: 0.10,
 };
 
 /** Active model version identifier. */
-export const MODEL_VERSION = 'radar-2';
+export const MODEL_VERSION = 'radar-3';
 
 /** Maximum count of live-token protocols retained for the comparison view. */
 export const LIVE_ROWS = 24;
@@ -105,6 +107,8 @@ export interface BoardRow {
     growth_multiplier: number;
     maturity_multiplier: number;
     confidence_discount: number;
+    breadth_chains: number;
+    breadth_multiplier: number;
     age_days: number | null;
   };
   farm_steps: string[];
@@ -127,6 +131,8 @@ export interface RadarRow {
   maturity_multiplier: number;
   category_multiple: number;
   confidence_discount: number;
+  breadth_chains: number;
+  breadth_multiplier: number;
 }
 
 /** A live trading protocol row used for peer comps and market sanity. */
@@ -262,12 +268,13 @@ export function computeCategoryMultiples(protocols: SnapshotProtocol[], model: M
 }
 
 /**
- * Model v2 valuation calculation for an individual protocol:
+ * Model v3 valuation calculation for an individual protocol:
  * Base: 1,000,000 * (TVL / 1,000,000)^0.85 * M_category
  * Growth: clamp change_7d to [-60, 120]%, multiplier = 1 + (growth / 100) * 0.40
  * Maturity: age bounded [0, 1095], multiplier = 0.50 + 0.50 * ln(1 + age) / ln(1096)
  * Confidence discount: (change_7d null ? 0.92 : 1.0) * (listed_at null ? 0.88 : 1.0)
- * Implied value: max(1, round(Base * Mult_growth * Mult_maturity * Discount_confidence))
+ * Breadth: chains = max(1, chains.length), multiplier = (1 + ln(chains))^0.10
+ * Implied value: max(1, round(Base * Mult_growth * Mult_maturity * Discount_confidence * Mult_breadth))
  */
 export function impliedValue(
   protocol: SnapshotProtocol,
@@ -281,6 +288,8 @@ export function impliedValue(
   growthMult: number;
   maturityMult: number;
   confidenceDiscount: number;
+  breadthChains: number;
+  breadthMult: number;
   age: number | null;
 } {
   const age = ageDays(asOf, protocol.listed_at);
@@ -299,7 +308,10 @@ export function impliedValue(
     (protocol.change_7d === null ? model.confidence_discount_growth : 1.0) *
     (protocol.listed_at === null ? model.confidence_discount_listed : 1.0);
 
-  const implied = Math.max(1, Math.round(base * growthMult * maturityMult * confDiscount));
+  const breadthChains = Math.max(1, protocol.chains.length);
+  const breadthMult = Math.pow(1 + Math.log(breadthChains), model.breadth_gamma);
+
+  const implied = Math.max(1, Math.round(base * growthMult * maturityMult * confDiscount * breadthMult));
 
   return {
     implied,
@@ -308,6 +320,8 @@ export function impliedValue(
     growthMult,
     maturityMult,
     confidenceDiscount: confDiscount,
+    breadthChains,
+    breadthMult,
     age,
   };
 }
@@ -586,6 +600,8 @@ export function buildBoard(snapshot: Snapshot, model: ModelConstants = MODEL): B
       growth_multiplier: round4(s.growthMult),
       maturity_multiplier: round4(s.maturityMult),
       confidence_discount: round4(s.confidenceDiscount),
+      breadth_chains: s.breadthChains,
+      breadth_multiplier: round4(s.breadthMult),
       age_days: s.age,
     },
     farm_steps: farmSteps(s.p, s.age).map(stepText),
@@ -627,6 +643,8 @@ export function radarRow(row: BoardRow): RadarRow {
     maturity_multiplier: row.model.maturity_multiplier,
     category_multiple: row.model.category_multiple,
     confidence_discount: row.model.confidence_discount,
+    breadth_chains: row.model.breadth_chains,
+    breadth_multiplier: row.model.breadth_multiplier,
   };
 }
 
